@@ -12,4 +12,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Service.Diablo2.Entities\Service.Diablo2.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

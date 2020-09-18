@@ -6,10 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Service.Diablo2.Database;
+using Service.Diablo2.Extensions;
 
 namespace service.diablo2
 {
@@ -22,13 +25,13 @@ namespace service.diablo2
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerDocument();
+            services.AddDbContext<Diablo2Context>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Diablo2Context")));
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -37,11 +40,11 @@ namespace service.diablo2
             }
 
             app.UseHttpsRedirection();
-
+            app.UseOpenApi();
             app.UseRouting();
-
+            app.UseSwaggerUi3();
             app.UseAuthorization();
-
+            app.ConfigureExceptionHandler(app.ApplicationServices.GetService<ILogger>());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
